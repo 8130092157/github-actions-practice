@@ -8,7 +8,6 @@ name: Collapsible PR Comments
 on:
   pull_request:
     types: [opened, synchronize]
-    branches: [dev, qa]
 
 jobs:
   collapsible-comments:
@@ -16,7 +15,12 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-
+        with:
+          fetch-depth: 0   # fetch full history so git log works
+      
+      - name: Fetch base branch
+        run: git fetch origin ${{ github.event.pull_request.base.ref }}
+      
       - name: Generate collapsible comment content
         run: |
           echo "<details><summary>Commit-based Comments</summary>" > comment.md
