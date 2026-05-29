@@ -68,6 +68,9 @@
 
 ###
 
+permissions:
+  pull-requests: write
+
 name: Collapsible PR Comments
 
 on:
@@ -85,11 +88,12 @@ jobs:
         run: |
           echo "<details><summary>Commit-based Comments</summary>" > comment.md
           echo "" >> comment.md
-          git log --pretty=format:"- %h %s" origin/main..HEAD >> comment.md
+          git log --pretty=format:"- %h %s" origin/${{ github.event.pull_request.base.ref }}..HEAD >> comment.md
           echo "</details>" >> comment.md
 
       - name: Post sticky comment
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           path: comment.md
+
 
