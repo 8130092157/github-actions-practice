@@ -1,8 +1,10 @@
 name: hello-world
 
 on:
-  workflow_dispatch:
-
+  push:
+    branches:
+      - qa
+      
 jobs:
   print:
     runs-on: ubuntu-latest
