@@ -1,0 +1,14 @@
+name: hello-world
+on:
+  workflow_dispatch:
+
+  runs-on: ubuntu-latest
+
+  jobss:
+    print:
+      steps:
+        - name: Printing...
+          run: Print("Hello World")
+          shell: python
+
+  
