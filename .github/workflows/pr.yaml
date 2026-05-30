@@ -1,13 +1,11 @@
 name: hello-world
+
 on:
   workflow_dispatch:
 
-
 jobs:
   print:
-      runs-on: ubuntu-latest
-      steps:
-        - name: Printing...
-          run: echo "Hello World!"
-
-  
+    runs-on: ubuntu-latest
+    steps:
+      - name: Printing with Python
+        run: python -c "print('Hello World')"
