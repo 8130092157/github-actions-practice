@@ -2,10 +2,10 @@ name: hello-world
 on:
   workflow_dispatch:
 
-  runs-on: ubuntu-latest
 
-  jobss:
-    print:
+jobs:
+  print:
+      runs-on: ubuntu-latest
       steps:
         - name: Printing...
           run: Print("Hello World")
