@@ -1,9 +1,7 @@
 name: hello-world
 
 on:
-  push:
-    branches:
-      - qa
+  workflow_dispatch:
 
 jobs:
   print:
