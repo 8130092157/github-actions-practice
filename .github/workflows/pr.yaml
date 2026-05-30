@@ -4,10 +4,11 @@ on:
   push:
     branches:
       - qa
-      
+
 jobs:
   print:
     runs-on: ubuntu-latest
     steps:
       - name: Printing with Python
-        run: python -c "print('Hello World')"
+        run: print("Hello, World!")
+        shell: python
