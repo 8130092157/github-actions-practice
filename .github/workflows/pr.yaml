@@ -22,8 +22,15 @@ jobs:
           COMMIT_MSG=$(git log -1 --pretty=format:"%s")
           echo "msg=$COMMIT_MSG" >> $GITHUB_OUTPUT
 
-      - name: Comment on PR 
-        uses: marocchino/sticky-pull-request-comment@v3
+      
+      - name: Create comment
+        uses: peter-evans/create-or-update-comment@v5
         with:
-          message: |
-            Release ${{ github.sha }} to <https://pr-${{ github.event.number }}.example.com>
+          issue-number: 1
+          body: |
+            This is a multi-line test comment
+            - With GitHub **Markdown** :sparkles:
+            - Created by [create-or-update-comment][1]
+
+            [1]: https://github.com/peter-evans/create-or-update-comment
+          reactions: '+1'
