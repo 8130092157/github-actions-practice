@@ -1,7 +1,7 @@
 name: build-test-deploy
 
 on:
-  workflow_dispatch:
+  push:
 
 jobs:
   build:
