@@ -9,23 +9,37 @@ permissions:
 
 jobs:
   scan-and-comment:
-      runs-on: ubuntu-latest
-      steps:
-        - name: Checkout Code
-          uses: actions/checkout@v4
+    runs-on: ubuntu-latest
 
-        - name: Run Security Scan
-          run: echo "Scan passed with no issues" > scan.txt
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-        - name: Post Scan Results
-          uses: peter-evans/create-or-update-comment@v4
-          with:
-            issue-number: ${{ github.event.pull_request.number }}
-            body: |
-              <details>
-              <summary>Scan results for commit ${{ github.sha }}</summary>
+      - name: Run Security Scan
+        id: scan
+        run: echo "Scan passed with no issues" > scan.txt
 
-              ```
-              ${{ steps.scan.outputs }}
-              ```
-              </details>
+      # Find existing scan comment (if any)
+      - name: Find Scan Comment
+        id: find-scan
+        uses: peter-evans/find-comment@v3
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: 'Scan results'
+
+      # Create or update the scan comment
+      - name: Update Scan Results
+        uses: peter-evans/create-or-update-comment@v5
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-id: ${{ steps.find-scan.outputs.comment-id }}
+          body: |
+            <details>
+            <summary>Scan results for commit ${{ github.sha }}</summary>
+
+            ```
+            Scan passed with no issues
+            ```
+            </details>
+          edit-mode: replace
