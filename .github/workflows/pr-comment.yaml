@@ -2,7 +2,7 @@ name: PR Commit Commenter
 
 on:
   pull_request:
-    types: [opened, synchronize]
+#    types: [opened, synchronize]
 
 
 permissions:
