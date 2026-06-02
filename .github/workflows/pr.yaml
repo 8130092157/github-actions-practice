@@ -20,25 +20,25 @@ jobs:
         id: scan
         run: echo "Scan passed with no issues" > scan.txt
 
-      - name: Find Scan Comment
-        id: find-scan
-        uses: peter-evans/find-comment@v3
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          comment-author: 'github-actions[bot]'
-          body-includes: 'Scan results'
-
-      - name: Update Scan Results
-        uses: peter-evans/create-or-update-comment@v5
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          comment-id: ${{ steps.find-scan.outputs.comment-id }}
-          body: |
-            <details>
-            <summary>Scan results for commit ${{ github.sha }}</summary>
-
-            ```
-            Scan passed with no issues
-            ```
-            </details>
-          edit-mode: replace
+#      - name: Find Scan Comment
+#        id: find-scan
+#        uses: peter-evans/find-comment@v3
+#        with:
+#          issue-number: ${{ github.event.pull_request.number }}
+#          comment-author: 'github-actions[bot]'
+#          body-includes: 'Scan results'
+#
+#      - name: Update Scan Results
+#        uses: peter-evans/create-or-update-comment@v5
+#        with:
+#          issue-number: ${{ github.event.pull_request.number }}
+#          comment-id: ${{ steps.find-scan.outputs.comment-id }}
+#          body: |
+#            <details>
+#            <summary>Scan results for commit ${{ github.sha }}</summary>
+#
+#            ```
+#            Scan passed with no issues
+#            ```
+#            </details>
+#          edit-mode: replace
