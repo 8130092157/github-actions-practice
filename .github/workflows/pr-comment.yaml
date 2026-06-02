@@ -24,7 +24,6 @@ jobs:
           body: |
             <details>
             <summary>Scan results for commit ${{ github.sha }}</summary>
-            
             ```
             ${{ steps.scan.outputs }}
             ```
