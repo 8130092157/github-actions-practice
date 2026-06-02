@@ -3,6 +3,7 @@ name: PR Commit Commenter
 on:
   pull_request:
     types: [opened, synchronize]
+  workflow_dispatch:
 
 permissions:
   contents: read
