@@ -30,7 +30,7 @@ jobs:
         with:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: 'github-actions[bot]'
-          body-includes: 'New Commit Detected!'
+          body-includes: 'Hello world '
 
       # Step 2: Create or update the comment
       - name: Create or Update Commit Comment
