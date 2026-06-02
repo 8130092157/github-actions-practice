@@ -1,9 +1,9 @@
 name: PR Commit Commenter
 
 on:
-  pull_request:
-    types: [opened, synchronize]
-  workflow_dispatch:
+#  pull_request:
+#    types: [opened, synchronize]
+  push:
 
 permissions:
   contents: read
