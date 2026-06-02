@@ -5,7 +5,6 @@ permissions:
 
 name: Collapsible PR Comments
 
-
 on:
   pull_request:
     types: [opened, synchronize]
