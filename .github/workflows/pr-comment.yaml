@@ -3,44 +3,29 @@ name: PR Commit Commenter
 on:
   pull_request:
     types: [opened, synchronize]
-  push:
-
 
 permissions:
-  contents: read
   pull-requests: write
 
 jobs:
   scan-and-comment:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Run Security Scan
-        id: scan
         run: echo "Scan passed with no issues" > scan.txt
 
-      - name: Find Scan Comment
-        id: find-scan
-        uses: peter-evans/find-comment@v3
+      - name: Post Scan Results
+        uses: peter-evans/create-or-update-comment@v4
         with:
           issue-number: ${{ github.event.pull_request.number }}
-          comment-author: 'github-actions[bot]'
-          body-includes: 'Scan results'
-
-      - name: Update Scan Results
-        uses: peter-evans/create-or-update-comment@v5
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          comment-id: ${{ steps.find-scan.outputs.comment-id }}
           body: |
             <details>
             <summary>Scan results for commit ${{ github.sha }}</summary>
-
+            
             ```
-            Scan passed with no issues
+            ${{ steps.scan.outputs }}
             ```
             </details>
-          edit-mode: replace
