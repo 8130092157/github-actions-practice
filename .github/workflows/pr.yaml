@@ -20,7 +20,6 @@ jobs:
         id: scan
         run: echo "Scan passed with no issues" > scan.txt
 
-      # Find existing scan comment (if any)
       - name: Find Scan Comment
         id: find-scan
         uses: peter-evans/find-comment@v3
@@ -29,7 +28,6 @@ jobs:
           comment-author: 'github-actions[bot]'
           body-includes: 'Scan results'
 
-      # Create or update the scan comment
       - name: Update Scan Results
         uses: peter-evans/create-or-update-comment@v5
         with:
