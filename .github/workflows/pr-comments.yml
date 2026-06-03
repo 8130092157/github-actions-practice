@@ -1,0 +1,35 @@
+permissions:
+  pull-requests: write
+  contents: read
+  checks: write
+
+name: Collapsible PR Comments
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  collapsible-comments:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # fetch full history so git log works
+      
+      - name: Fetch base branch
+        run: git fetch origin ${{ github.event.pull_request.base.ref }}
+      
+      - name: Generate collapsible comment content
+        run: |
+          echo "<details><summary>Commit-based Comments</summary>" > comment.md
+          echo "" >> comment.md
+          git log --pretty=format:"- %h %s" origin/${{ github.event.pull_request.base.ref }}..HEAD >> comment.md
+          echo "</details>" >> comment.md
+
+      - name: Post sticky comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          path: comment.md
+
