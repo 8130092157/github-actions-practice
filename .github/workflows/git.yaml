@@ -13,20 +13,8 @@ jobs:
     if: startsWith(github.event.comment.body, '/chat')
     runs-on: ubuntu-latest
     steps:
-      - name: Check OpenAI Key
-        id: check
-        run: |
-          RESPONSE=$(curl -s https://api.openai.com/v1/responses \
-            -H "Authorization: Bearer ${{ secrets.OPENAI_API_KEY }}" \
-            -H "Content-Type: application/json" \
-            -d '{
-              "model": "gpt-4-1106-preview",
-              "input": "ping"
-            }' | jq -r '.status')
-          echo "status=$RESPONSE" >> $GITHUB_OUTPUT
 
       - name: Run Code Butler
-        if: steps.check.outputs.status == 'completed'
         uses: ca-dp/code-butler@v1
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -36,11 +24,3 @@ jobs:
           lang: en
           model: gpt-4-1106-preview
 
-      - name: Post Fallback Comment
-        if: steps.check.outputs.status != 'completed'
-        uses: peter-evans/create-or-update-comment@v4
-        with:
-          issue-number: ${{ github.event.issue.number }}
-          body: |
-            ⚠️ OpenAI API key check failed (status: ${{ steps.check.outputs.status }}).
-            Please verify your key and quota.
