@@ -12,7 +12,7 @@ jobs:
   cli:
     runs-on: ubuntu-latest
     steps:
-      - uses: ca-dp/code-buttler@v1
+      - uses: ca-dp/code-butler@v1
         with:
             GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
             OPEN_API_KEY: ${{secrets.OPEN_API_KEY}}
