@@ -15,6 +15,6 @@ jobs:
       - uses: ca-dp/code-butler@v1
         with:
             GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-            OPEN_API_KEY: ${{secrets.OPEN_API_KEY}}
+            OPEN_API_KEY: ${{secrets.OPENAI_API_KEY}}
             cmd: chat
             comment_body: ${{github.event.comment.body}}
