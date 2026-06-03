@@ -1,33 +1,20 @@
-name: ai-pr-comment
+name: git-cli
 
 on:
   issue_comment:
     types: [created]
 
 permissions:
+  contents: write
   pull-requests: write
 
 jobs:
-  ai-comment:
+  chat:
     runs-on: ubuntu-latest
     steps:
-      # Checkout repo
-      - uses: actions/checkout@v4
-
-      # Run AI action (replace with your actual action)
-      - name: Run AI assistant
-        id: ai
-        uses: ca-dp/code-butler@v1
+      - uses: ca-dp/code-butler@v1
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           cmd: chat
-
-      # Post AI output back to PR
-      - name: Add AI comment
-        uses: peter-evans/create-or-update-comment@v4
-        with:
-          issue-number: ${{ github.event.issue.number }}
-          body: |
-            🤖 AI says:
-            ${{ steps.ai.outputs.result }}
+          comment_body: ${{github.event.comment.body}}
