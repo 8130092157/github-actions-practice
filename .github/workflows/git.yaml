@@ -6,7 +6,7 @@ on:
 jobs:
   cli:
     runs-on: ubuntu-latest
-    env:
+    with:
       GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
     steps:
       - uses: actions/checkout@v4
