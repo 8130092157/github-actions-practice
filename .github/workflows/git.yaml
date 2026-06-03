@@ -1,0 +1,11 @@
+name: git-cli
+
+on:
+  push:
+
+jobs:
+  cli:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: action/checkout@v4
+      - run: env
