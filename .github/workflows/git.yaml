@@ -1,30 +1,46 @@
-name: AI PR Comment
+name: Code Butler with Key Check
+
+permissions:
+  contents: read
+  pull-requests: write
 
 on:
   issue_comment:
     types: [created]
 
 jobs:
-  ai:
+  chat:
     if: startsWith(github.event.comment.body, '/chat')
     runs-on: ubuntu-latest
     steps:
-      - name: Call OpenAI
-        id: ai
+      - name: Check OpenAI Key
+        id: check
         run: |
           RESPONSE=$(curl -s https://api.openai.com/v1/responses \
             -H "Authorization: Bearer ${{ secrets.OPENAI_API_KEY }}" \
             -H "Content-Type: application/json" \
             -d '{
-              "model": "gpt-5.4-mini",
-              "input": "Hello from GitHub Actions!"
-            }' | jq -r '.output[0].content[0].text')
-          echo "result=$RESPONSE" >> $GITHUB_OUTPUT
+              "model": "gpt-4-1106-preview",
+              "input": "ping"
+            }' | jq -r '.status')
+          echo "status=$RESPONSE" >> $GITHUB_OUTPUT
 
-      - name: Post AI Comment
+      - name: Run Code Butler
+        if: steps.check.outputs.status == 'completed'
+        uses: ca-dp/code-butler@v1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          cmd: chat
+          comment_body: ${{ github.event.comment.body }}
+          lang: en
+          model: gpt-4-1106-preview
+
+      - name: Post Fallback Comment
+        if: steps.check.outputs.status != 'completed'
         uses: peter-evans/create-or-update-comment@v4
         with:
           issue-number: ${{ github.event.issue.number }}
           body: |
-            🤖 AI says:
-            ${{ steps.ai.outputs.result }}
+            ⚠️ OpenAI API key check failed (status: ${{ steps.check.outputs.status }}).
+            Please verify your key and quota.
