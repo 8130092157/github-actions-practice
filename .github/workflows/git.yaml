@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: ca-dp/code-butler@v1
         with:
-            GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-            OPENAI_API_KEY: ${{secrets.OPENAI_API_KEY}}
-            cmd: chat
-            comment_body: ${{github.event.comment.body}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+#          cmd: chat
+#          comment_body: ${{github.event.comment.body}}
