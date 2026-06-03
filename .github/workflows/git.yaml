@@ -1,22 +1,30 @@
-name: Code Butler
-
-permissions:
-  contents: read
-  pull-requests: write
+name: AI PR Comment
 
 on:
   issue_comment:
     types: [created]
 
 jobs:
-  chat:
+  ai:
     if: startsWith(github.event.comment.body, '/chat')
     runs-on: ubuntu-latest
     steps:
-      - uses: ca-dp/code-butler@v1
+      - name: Call OpenAI
+        id: ai
+        run: |
+          RESPONSE=$(curl -s https://api.openai.com/v1/responses \
+            -H "Authorization: Bearer ${{ secrets.OPENAI_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "model": "gpt-5.4-mini",
+              "input": "Hello from GitHub Actions!"
+            }' | jq -r '.output[0].content[0].text')
+          echo "result=$RESPONSE" >> $GITHUB_OUTPUT
+
+      - name: Post AI Comment
+        uses: peter-evans/create-or-update-comment@v4
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          cmd: chat
-          comment_body: ${{ github.event.comment.body }}
-          lang: ja
+          issue-number: ${{ github.event.issue.number }}
+          body: |
+            🤖 AI says:
+            ${{ steps.ai.outputs.result }}
