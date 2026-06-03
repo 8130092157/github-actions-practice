@@ -1,14 +1,20 @@
 name: git-cli
 
 on:
-  push:
+  issue_comment:
+    types:
+      - created
+
+permissions:
+  pull-requests: write
 
 jobs:
   cli:
     runs-on: ubuntu-latest
-    with:
-      GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
     steps:
-      - uses: actions/checkout@v4
-      - run: env
-      - run: gh auth status
+      - uses: ca-dp/code-buttler@v1
+        with:
+            GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+            OPEN_API_KEY: ${{secrets.OPEN_API_KEY}}
+            cmd: chat
+            comment_body: ${{github.event.comment.body}}
