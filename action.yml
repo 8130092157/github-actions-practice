@@ -3,10 +3,12 @@ description: Automatically label new pull requests with "needs review"
 author: Abhay Chauhan
 
 inputs:
-  name:
-    description: 'Name of the person to greet'
+  label:
+    description: 'The label to add to new pull requests'
     required: true
-    default: 'World'
+  gh-token:
+    description: 'GitHub token with permissions to add labels'
+    required: true
 
 runs:
   using: "node20"
