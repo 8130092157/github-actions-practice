@@ -1,0 +1,13 @@
+name: Label new PRs
+description: Automatically label new pull requests with "needs review"
+author: Abhay Chauhan
+
+inputs:
+  name:
+    description: 'Name of the person to greet'
+    required: true
+    default: 'World'
+
+runs:
+  using: "node24"
+  main: "dist/index.js"
