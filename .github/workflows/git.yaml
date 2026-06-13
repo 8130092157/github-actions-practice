@@ -1,4 +1,4 @@
-name: Print a greeting message
+name: Auto-label new PRs
 
 permissions:
   contents: read
@@ -17,6 +17,6 @@ jobs:
 
       - uses: ./
         with:
-        label: "needs review"
-        gh-token: ${{ secrets.GITHUB_TOKEN }}
+          label: "needs review"
+          gh-token: ${{ secrets.GITHUB_TOKEN }}
 
