@@ -1,4 +1,4 @@
-import { getInput } from "@actions/core";
+import * as core from "@actions/core";
 
-const name = getInput('name');
+const name = core.getInput("name");
 console.log(`Hello ${name}, Welcome to custom workflow!`);
