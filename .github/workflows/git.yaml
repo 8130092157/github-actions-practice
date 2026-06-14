@@ -1,26 +1,22 @@
-name: Code Butler with Key Check
+name: Auto-label new PRs
 
 permissions:
   contents: read
   pull-requests: write
 
-on:
-  issue_comment:
-    types: [created]
+on: 
+  pull_request:
+    types: [opened, synchronize]
 
 jobs:
-  chat:
-    if: startsWith(github.event.comment.body, '/chat')
+  print-greeting:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Run Code Butler
-        uses: ca-dp/code-butler@v1
+      - uses: 8130092157/github-actions-practice@v1.1.1
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          cmd: chat
-          comment_body: ${{ github.event.comment.body }}
-          lang: en
-          model: gpt-4-1106-preview
+          label: "needs review"
+          gh-token: ${{ secrets.GITHUB_TOKEN }}
 

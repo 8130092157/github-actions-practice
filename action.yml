@@ -1,0 +1,22 @@
+name: Label wwk@12s @new PRs
+description: Automatically label new pull requests with "needs review"
+author: Abhay Chauhan
+
+inputs:
+  label:
+    description: 'The label to add to new pull requests'
+    required: true
+  gh-token:
+    description: 'GitHub token with permissions to add labels'
+    required: true
+
+runs:
+  using: "node20"
+  main: "dist/main.js"
+<<<<<<< HEAD
+
+branding:
+  icon: "code"
+  color: "blue"
+=======
+>>>>>>> efcb29a3f0bed2ba7016237f242568302023642b
