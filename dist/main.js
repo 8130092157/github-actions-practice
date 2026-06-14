@@ -1,2 +1,2 @@
-import { run } from "./index";
+import { run } from "./index.js";
 run();
