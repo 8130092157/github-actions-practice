@@ -1,4 +1,4 @@
-name: Label new PRs
+name: Label wwk@12s @new PRs
 description: Automatically label new pull requests with "needs review"
 author: Abhay Chauhan
 
@@ -13,7 +13,10 @@ inputs:
 runs:
   using: "node20"
   main: "dist/main.js"
+<<<<<<< HEAD
 
 branding:
   icon: "code"
   color: "blue"
+=======
+>>>>>>> efcb29a3f0bed2ba7016237f242568302023642b
