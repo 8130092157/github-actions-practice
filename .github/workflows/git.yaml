@@ -15,7 +15,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - uses: ./
+      - uses: 8130092157/github-actions-practice@v1.1.1
         with:
           label: "needs review"
           gh-token: ${{ secrets.GITHUB_TOKEN }}
