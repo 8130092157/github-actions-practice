@@ -37,6 +37,7 @@ jobs:
       - name: Fetch SonarQube Results
         id: sonar
         uses: ./
+        if: always()
         with:
           gh-token: ${{ secrets.GITHUB_TOKEN }}
           sonarqube-token: ${{ secrets.SONAR_TOKEN }}
@@ -46,6 +47,7 @@ jobs:
 
       - name: Post SonarQube Comment (Hide Old, Show Latest)
         uses: marocchino/sticky-pull-request-comment@v3
+        if: always()
         with:
           header: sonarqube-results
           hide_and_recreate: true
