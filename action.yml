@@ -20,6 +20,10 @@ inputs:
     description: 'SonarQube organization key (required for SonarCloud)'
     required: false
 
+outputs:
+  comment-body:
+    description: 'The formatted SonarQube comment body'
+
 runs:
   using: "node20"
   main: "dist/main.js"

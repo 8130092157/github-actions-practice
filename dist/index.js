@@ -1,4 +1,4 @@
-import { getInput, setFailed } from "@actions/core";
+import { getInput, setFailed, setOutput } from "@actions/core";
 import { context, getOctokit } from "@actions/github";
 export async function fetchSonarQubeResults(hostUrl, projectKey, token, organization) {
     try {
@@ -73,15 +73,9 @@ export async function run() {
         }
         // Format comment
         const commentBody = formatSonarQubeComment(sonarResults, projectKey, hostUrl);
-        // Post comment to PR
-        const octokit = getOctokit(ghToken);
-        await octokit.rest.issues.createComment({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            issue_number: pullRequest.number,
-            body: commentBody,
-        });
-        console.log(`✅ SonarQube comment posted to PR #${pullRequest.number}`);
+        // Output the comment body for use in subsequent steps
+        setOutput("comment-body", commentBody);
+        console.log(`✅ SonarQube results fetched successfully`);
     }
     catch (error) {
         setFailed(`Action failed with error: ${error}`);

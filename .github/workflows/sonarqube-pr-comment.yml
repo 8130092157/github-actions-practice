@@ -34,11 +34,20 @@ jobs:
             -Dsonar.projectKey=8130092157_github-actions-practice
             -Dsonar.organization=8130092157
 
-      - name: Post SonarQube Results to PR
+      - name: Fetch SonarQube Results
+        id: sonar
         uses: ./
         with:
           gh-token: ${{ secrets.GITHUB_TOKEN }}
           sonarqube-token: ${{ secrets.SONAR_TOKEN }}
           sonarqube-host-url: 'https://sonarcloud.io'
-          sonarqube-project-key: 'your-project-key'
-          sonarqube-organization: 'your-organization'
+          sonarqube-project-key: '8130092157_github-actions-practice'
+          sonarqube-organization: '8130092157'
+
+      - name: Post SonarQube Comment (Hide Old, Show Latest)
+        uses: marocchino/sticky-pull-request-comment@v3
+        with:
+          header: sonarqube-results
+          hide_and_recreate: true
+          hide_classify: 'OUTDATED'
+          message: ${{ steps.sonar.outputs.comment-body }}
