@@ -1,0 +1,33 @@
+name: Post SonarQube Results to PR
+description: Run SonarQube scan and automatically post results as PR comment
+author: Abhay Chauhan
+
+inputs:
+  gh-token:
+    description: 'GitHub token with permissions to add comments'
+    required: true
+  sonarqube-token:
+    description: 'SonarQube token for authentication'
+    required: true
+  sonarqube-host-url:
+    description: 'SonarQube host URL (e.g., https://sonarcloud.io)'
+    required: false
+    default: 'https://sonarcloud.io'
+  sonarqube-project-key:
+    description: 'SonarQube project key'
+    required: true
+  sonarqube-organization:
+    description: 'SonarQube organization key (required for SonarCloud)'
+    required: false
+
+outputs:
+  comment-body:
+    description: 'The formatted SonarQube comment body'
+
+runs:
+  using: "node20"
+  main: "dist/main.js"
+
+branding:
+  icon: "code"
+  color: "blue"

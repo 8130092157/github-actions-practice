@@ -1,16 +1,33 @@
 {
-  "name": "actions-learning-pathway",
-  "version": "0.1.0",
-  "private": true,
+  "name": "github-actions-practice",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "test": "next lint"
+    "build": "tsc",
+    "test": "jest",
+    "test:coverage": "jest --coverage"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/8130092157/github-actions-practice.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/8130092157/github-actions-practice/issues"
+  },
+  "homepage": "https://github.com/8130092157/github-actions-practice#readme",
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "jest": "^30.4.2",
+    "ts-jest": "^29.4.11",
+    "typescript": "^6.0.3"
+  },
+  "type": "module",
   "dependencies": {
-    "next": "13.5.4",
-    "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "@actions/core": "^2.0.0",
+    "@actions/github": "^5.1.1"
   }
 }
