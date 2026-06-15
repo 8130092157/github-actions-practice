@@ -18,7 +18,7 @@ export async function fetchSonarQubeResults(
   organization?: string
 ): Promise<SonarQubeComponent | null> {
   try {
-    let url = `${hostUrl}/api/measures/component?component=${projectKey}&metricKeys=alert_status,quality_gate_details,bugs,vulnerabilities,code_smells,coverage,duplicated_lines_density,ncloc,sqale_rating,security_rating,reliability_rating,maintainability_rating`;
+    let url = `${hostUrl}/api/measures/component?component=${projectKey}&metricKeys=alert_status,bugs,vulnerabilities,code_smells,coverage,duplicated_lines_density,sqale_rating,security_rating,reliability_rating`;
 
     if (organization) {
       url += `&organization=${organization}`;
@@ -58,7 +58,7 @@ function formatSonarQubeComment(component: SonarQubeComponent, projectKey: strin
   const vulnerabilities = getMeasure("vulnerabilities");
   const codeSmells = getMeasure("code_smells");
   const coverage = getMeasure("coverage");
-  const maintainability = getMeasure("maintainability_rating");
+  const maintainability = getMeasure("sqale_rating");
   const reliability = getMeasure("reliability_rating");
   const security = getMeasure("security_rating");
   const duplicatedLines = getMeasure("duplicated_lines_density");
@@ -79,7 +79,7 @@ ${qualityGateEmoji} **Quality Gate**: ${qualityGate}
 ### Ratings
 - 🛡️ **Security**: ${security}
 - ⚡ **Reliability**: ${reliability}
-- 🔧 **Maintainability**: ${maintainability}
+- 🔧 **Maintainability (SQALE)**: ${maintainability}
 
 [View Detailed Report on SonarQube](${hostUrl}/dashboard?id=${projectKey})`;
 }
