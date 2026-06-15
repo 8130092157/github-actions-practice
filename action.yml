@@ -1,22 +1,29 @@
-name: Label wwk@12s @new PRs
-description: Automatically label new pull requests with "needs review"
+name: Post SonarQube Results to PR
+description: Run SonarQube scan and automatically post results as PR comment
 author: Abhay Chauhan
 
 inputs:
-  label:
-    description: 'The label to add to new pull requests'
-    required: true
   gh-token:
-    description: 'GitHub token with permissions to add labels'
+    description: 'GitHub token with permissions to add comments'
     required: true
+  sonarqube-token:
+    description: 'SonarQube token for authentication'
+    required: true
+  sonarqube-host-url:
+    description: 'SonarQube host URL (e.g., https://sonarcloud.io)'
+    required: false
+    default: 'https://sonarcloud.io'
+  sonarqube-project-key:
+    description: 'SonarQube project key'
+    required: true
+  sonarqube-organization:
+    description: 'SonarQube organization key (required for SonarCloud)'
+    required: false
 
 runs:
   using: "node20"
   main: "dist/main.js"
-<<<<<<< HEAD
 
 branding:
   icon: "code"
   color: "blue"
-=======
->>>>>>> efcb29a3f0bed2ba7016237f242568302023642b
