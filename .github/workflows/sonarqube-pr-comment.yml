@@ -35,7 +35,7 @@ jobs:
             -Dsonar.organization=8130092157
 
       - name: Post SonarQube Results to PR
-        uses: 8130092157/github-actions-practice@v1
+        uses: ./
         with:
           gh-token: ${{ secrets.GITHUB_TOKEN }}
           sonarqube-token: ${{ secrets.SONAR_TOKEN }}
