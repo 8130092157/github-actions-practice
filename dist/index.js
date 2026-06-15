@@ -1,5 +1,5 @@
 import { getInput, setFailed, setOutput } from "@actions/core";
-import { context, getOctokit } from "@actions/github";
+import { context } from "@actions/github";
 export async function fetchSonarQubeResults(hostUrl, projectKey, token, organization) {
     try {
         let url = `${hostUrl}/api/measures/component?component=${projectKey}&metricKeys=alert_status,quality_gate_details,bugs,vulnerabilities,code_smells,coverage,duplicated_lines_density,ncloc,sqale_rating,security_rating,reliability_rating,maintainability_rating`;
