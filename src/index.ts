@@ -41,6 +41,18 @@ export async function fetchSonarQubeResults(
     }
 
     const data: any = await response.json();
+    
+    if (data.component) {
+      console.log(`📦 Component found: ${data.component.key}`);
+      console.log(`📈 Measures count: ${data.component.measures?.length || 0}`);
+      if (data.component.measures?.length > 0) {
+        console.log(`📋 Measures: ${data.component.measures.map((m: any) => `${m.key}=${m.value}`).join(", ")}`);
+      }
+    } else {
+      console.log(`⚠️  No component data returned from API`);
+      console.log(`📄 Full response: ${JSON.stringify(data, null, 2)}`);
+    }
+    
     return data.component || null;
   } catch (error) {
     throw new Error(`Failed to fetch SonarQube results: ${error}`);
