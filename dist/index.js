@@ -6,13 +6,17 @@ export async function fetchSonarQubeResults(hostUrl, projectKey, token, organiza
         if (organization) {
             url += `&organization=${organization}`;
         }
+        console.log(`🔗 Fetching from: ${url.replace(token, '***')}`);
         const response = await fetch(url, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
         });
+        console.log(`📍 Response status: ${response.status} ${response.statusText}`);
         if (!response.ok) {
-            throw new Error(`SonarQube API error: ${response.statusText}`);
+            const errorText = await response.text();
+            console.log(`❌ API Error Response: ${errorText}`);
+            throw new Error(`SonarQube API error: ${response.status} ${response.statusText}`);
         }
         const data = await response.json();
         return data.component || null;
