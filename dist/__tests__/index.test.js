@@ -1,29 +1,81 @@
 import { getInput, setFailed } from "@actions/core";
 import { context, getOctokit } from "@actions/github";
+import * as mainModule from "../index";
 jest.mock("@actions/core");
 jest.mock("@actions/github");
-import * as mainModule from "../index";
 const mockGetInput = getInput;
 const mockSetFailed = setFailed;
 const mockGetOctokit = getOctokit;
-describe("GitHub Action - Add Labels", () => {
+describe("GitHub Action - SonarQube PR Comments", () => {
     beforeEach(() => {
         jest.clearAllMocks();
+        global.fetch = jest.fn();
     });
-    describe("successful label addition", () => {
-        it("should add label to pull request when context is valid", async () => {
-            const mockAddLabels = jest.fn().mockResolvedValue({});
+    describe("fetchSonarQubeResults", () => {
+        it("should fetch SonarQube component data successfully", async () => {
+            const mockComponent = {
+                key: "my-project",
+                measures: [
+                    { key: "alert_status", value: "OK" },
+                    { key: "bugs", value: "2" },
+                    { key: "vulnerabilities", value: "0" },
+                    { key: "code_smells", value: "5" },
+                    { key: "coverage", value: "85" },
+                ],
+            };
+            global.fetch.mockResolvedValue({
+                ok: true,
+                json: jest.fn().mockResolvedValue({ component: mockComponent }),
+            });
+            const result = await mainModule.fetchSonarQubeResults("https://sonarcloud.io", "my-project", "token123", "my-org");
+            expect(result).toEqual(mockComponent);
+        });
+        it("should handle API errors gracefully", async () => {
+            global.fetch.mockResolvedValue({
+                ok: false,
+                statusText: "Unauthorized",
+            });
+            await expect(mainModule.fetchSonarQubeResults("https://sonarcloud.io", "my-project", "invalid-token")).rejects.toThrow("SonarQube API error");
+        });
+    });
+    describe("successful comment posting", () => {
+        it("should post SonarQube results as PR comment", async () => {
+            const mockCreateComment = jest.fn().mockResolvedValue({});
             mockGetInput.mockImplementation((name) => {
                 if (name === "gh-token")
-                    return "fake-token";
-                if (name === "label")
-                    return "bug";
+                    return "gh-token-123";
+                if (name === "sonarqube-token")
+                    return "sonar-token-123";
+                if (name === "sonarqube-host-url")
+                    return "https://sonarcloud.io";
+                if (name === "sonarqube-project-key")
+                    return "my-project";
+                if (name === "sonarqube-organization")
+                    return "my-org";
                 return "";
+            });
+            const mockComponent = {
+                key: "my-project",
+                measures: [
+                    { key: "alert_status", value: "OK" },
+                    { key: "bugs", value: "0" },
+                    { key: "vulnerabilities", value: "0" },
+                    { key: "code_smells", value: "3" },
+                    { key: "coverage", value: "90" },
+                    { key: "duplicated_lines_density", value: "2" },
+                    { key: "maintainability_rating", value: "A" },
+                    { key: "reliability_rating", value: "A" },
+                    { key: "security_rating", value: "A" },
+                ],
+            };
+            global.fetch.mockResolvedValue({
+                ok: true,
+                json: jest.fn().mockResolvedValue({ component: mockComponent }),
             });
             mockGetOctokit.mockReturnValue({
                 rest: {
                     issues: {
-                        addLabels: mockAddLabels,
+                        createComment: mockCreateComment,
                     },
                 },
             });
@@ -43,69 +95,25 @@ describe("GitHub Action - Add Labels", () => {
                 configurable: true,
             });
             await mainModule.run();
-            expect(mockAddLabels).toHaveBeenCalledWith({
+            expect(mockCreateComment).toHaveBeenCalledWith({
                 owner: "test-owner",
                 repo: "test-repo",
                 issue_number: 123,
-                labels: ["bug"],
+                body: expect.stringContaining("SonarQube Analysis Results"),
             });
             expect(mockSetFailed).not.toHaveBeenCalled();
         });
-        it("should handle multiple labels", async () => {
-            const mockAddLabels = jest.fn().mockResolvedValue({});
-            mockGetInput.mockImplementation((name) => {
-                if (name === "gh-token")
-                    return "fake-token";
-                if (name === "label")
-                    return "bug,feature";
-                return "";
-            });
-            mockGetOctokit.mockReturnValue({
-                rest: {
-                    issues: {
-                        addLabels: mockAddLabels,
-                    },
-                },
-            });
-            Object.defineProperty(context, "payload", {
-                value: {
-                    pull_request: {
-                        number: 456,
-                    },
-                },
-                configurable: true,
-            });
-            Object.defineProperty(context, "repo", {
-                value: {
-                    owner: "test-owner",
-                    repo: "test-repo",
-                },
-                configurable: true,
-            });
-            await mainModule.run();
-            expect(mockAddLabels).toHaveBeenCalledWith({
-                owner: "test-owner",
-                repo: "test-repo",
-                issue_number: 456,
-                labels: ["bug,feature"],
-            });
-        });
     });
     describe("error handling", () => {
-        it("should fail when no pull request is found in context", async () => {
+        it("should fail when no pull request is found", async () => {
             mockGetInput.mockImplementation((name) => {
                 if (name === "gh-token")
-                    return "fake-token";
-                if (name === "label")
-                    return "bug";
+                    return "token";
+                if (name === "sonarqube-token")
+                    return "token";
+                if (name === "sonarqube-project-key")
+                    return "project";
                 return "";
-            });
-            mockGetOctokit.mockReturnValue({
-                rest: {
-                    issues: {
-                        addLabels: jest.fn(),
-                    },
-                },
             });
             Object.defineProperty(context, "payload", {
                 value: {
@@ -116,23 +124,19 @@ describe("GitHub Action - Add Labels", () => {
             await mainModule.run();
             expect(mockSetFailed).toHaveBeenCalledWith(expect.stringContaining("No pull request found in the context"));
         });
-        it("should fail when GitHub API call fails", async () => {
-            const apiError = new Error("API Error: Permission denied");
-            const mockAddLabels = jest.fn().mockRejectedValue(apiError);
+        it("should fail when SonarQube API call fails", async () => {
             mockGetInput.mockImplementation((name) => {
                 if (name === "gh-token")
-                    return "fake-token";
-                if (name === "label")
-                    return "bug";
+                    return "gh-token";
+                if (name === "sonarqube-token")
+                    return "sonar-token";
+                if (name === "sonarqube-host-url")
+                    return "https://sonarcloud.io";
+                if (name === "sonarqube-project-key")
+                    return "my-project";
                 return "";
             });
-            mockGetOctokit.mockReturnValue({
-                rest: {
-                    issues: {
-                        addLabels: mockAddLabels,
-                    },
-                },
-            });
+            global.fetch.mockRejectedValue(new Error("Network error"));
             Object.defineProperty(context, "payload", {
                 value: {
                     pull_request: {
@@ -151,54 +155,25 @@ describe("GitHub Action - Add Labels", () => {
             await mainModule.run();
             expect(mockSetFailed).toHaveBeenCalledWith(expect.stringContaining("Action failed with error"));
         });
-        it("should fail when required inputs are missing", async () => {
-            mockGetInput.mockImplementation((name) => {
-                if (name === "gh-token")
-                    return "";
-                if (name === "label")
-                    return "bug";
-                return "";
-            });
-            mockGetOctokit.mockImplementation(() => {
-                throw new Error("Token is required");
-            });
-            Object.defineProperty(context, "payload", {
-                value: {
-                    pull_request: {
-                        number: 999,
-                    },
-                },
-                configurable: true,
-            });
-            Object.defineProperty(context, "repo", {
-                value: {
-                    owner: "test-owner",
-                    repo: "test-repo",
-                },
-                configurable: true,
-            });
-            await mainModule.run();
-            expect(mockSetFailed).toHaveBeenCalled();
-        });
     });
     describe("input validation", () => {
-        it("should use provided token from input", () => {
+        it("should read all required SonarQube inputs", () => {
             mockGetInput.mockImplementation((name) => {
                 if (name === "gh-token")
-                    return "custom-token-123";
+                    return "gh-token-123";
+                if (name === "sonarqube-token")
+                    return "sonar-token-123";
+                if (name === "sonarqube-host-url")
+                    return "https://sonarcloud.io";
+                if (name === "sonarqube-project-key")
+                    return "my-project-key";
+                if (name === "sonarqube-organization")
+                    return "my-organization";
                 return "";
             });
-            mockGetInput("gh-token");
             expect(mockGetInput).toHaveBeenCalledWith("gh-token");
-        });
-        it("should use provided label from input", () => {
-            mockGetInput.mockImplementation((name) => {
-                if (name === "label")
-                    return "enhancement";
-                return "";
-            });
-            mockGetInput("label");
-            expect(mockGetInput).toHaveBeenCalledWith("label");
+            expect(mockGetInput).toHaveBeenCalledWith("sonarqube-token");
+            expect(mockGetInput).toHaveBeenCalledWith("sonarqube-project-key");
         });
     });
 });

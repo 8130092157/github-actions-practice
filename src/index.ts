@@ -1,6 +1,5 @@
 import { getInput, setFailed } from "@actions/core";
 import { context, getOctokit } from "@actions/github";
-import fetch from "node-fetch";
 
 interface SonarQubeMetric {
   key: string;

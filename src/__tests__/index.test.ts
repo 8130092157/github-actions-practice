@@ -4,7 +4,6 @@ import * as mainModule from "../index";
 
 jest.mock("@actions/core");
 jest.mock("@actions/github");
-jest.mock("node-fetch");
 
 const mockGetInput = getInput as jest.MockedFunction<typeof getInput>;
 const mockSetFailed = setFailed as jest.MockedFunction<typeof setFailed>;
@@ -13,12 +12,11 @@ const mockGetOctokit = getOctokit as jest.MockedFunction<typeof getOctokit>;
 describe("GitHub Action - SonarQube PR Comments", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    global.fetch = jest.fn();
   });
 
   describe("fetchSonarQubeResults", () => {
     it("should fetch SonarQube component data successfully", async () => {
-      const mockFetch = require("node-fetch") as jest.Mocked<typeof import("node-fetch")>;
-      
       const mockComponent = {
         key: "my-project",
         measures: [
@@ -30,7 +28,7 @@ describe("GitHub Action - SonarQube PR Comments", () => {
         ],
       };
 
-      mockFetch.default = jest.fn().mockResolvedValue({
+      (global.fetch as jest.Mock).mockResolvedValue({
         ok: true,
         json: jest.fn().mockResolvedValue({ component: mockComponent }),
       });
@@ -46,9 +44,7 @@ describe("GitHub Action - SonarQube PR Comments", () => {
     });
 
     it("should handle API errors gracefully", async () => {
-      const mockFetch = require("node-fetch") as jest.Mocked<typeof import("node-fetch")>;
-
-      mockFetch.default = jest.fn().mockResolvedValue({
+      (global.fetch as jest.Mock).mockResolvedValue({
         ok: false,
         statusText: "Unauthorized",
       });
@@ -66,7 +62,6 @@ describe("GitHub Action - SonarQube PR Comments", () => {
   describe("successful comment posting", () => {
     it("should post SonarQube results as PR comment", async () => {
       const mockCreateComment = jest.fn().mockResolvedValue({});
-      const mockFetch = require("node-fetch") as jest.Mocked<typeof import("node-fetch")>;
 
       mockGetInput.mockImplementation((name: string) => {
         if (name === "gh-token") return "gh-token-123";
@@ -92,7 +87,7 @@ describe("GitHub Action - SonarQube PR Comments", () => {
         ],
       };
 
-      mockFetch.default = jest.fn().mockResolvedValue({
+      (global.fetch as jest.Mock).mockResolvedValue({
         ok: true,
         json: jest.fn().mockResolvedValue({ component: mockComponent }),
       });
@@ -159,8 +154,6 @@ describe("GitHub Action - SonarQube PR Comments", () => {
     });
 
     it("should fail when SonarQube API call fails", async () => {
-      const mockFetch = require("node-fetch") as jest.Mocked<typeof import("node-fetch")>;
-
       mockGetInput.mockImplementation((name: string) => {
         if (name === "gh-token") return "gh-token";
         if (name === "sonarqube-token") return "sonar-token";
@@ -169,7 +162,7 @@ describe("GitHub Action - SonarQube PR Comments", () => {
         return "";
       });
 
-      mockFetch.default = jest.fn().mockRejectedValue(new Error("Network error"));
+      (global.fetch as jest.Mock).mockRejectedValue(new Error("Network error"));
 
       Object.defineProperty(context, "payload", {
         value: {
